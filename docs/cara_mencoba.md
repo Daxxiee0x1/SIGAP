@@ -5,9 +5,15 @@ nol. Pilih satu jalur:
 
 | Jalur | Untuk | Kebutuhan | Waktu |
 | --- | --- | --- | --- |
+| Coba online | Juri yang ingin langsung mencoba verifier di browser | Browser modern. Buka <https://daxxiee0x1.github.io/SIGAP/> | ±1 menit |
 | [A. Docker](#a-docker-jalur-utama) | Demo lengkap seperti di video | Docker Compose v2.20+, curl | ±3 menit setelah build |
 | [B. Tanpa Docker](#b-tanpa-docker-linux) | Pengembangan, atau host tanpa Docker | Linux, Go 1.22, Python 3.11+ | ±5 menit |
 | [C. Verifier saja](#c-verifier-saja-laptop-analis) | Juri yang ingin mencoba tanpa memasang apa pun, atau analis yang memeriksa bundle | Kit juri dari GitHub Releases (Windows, macOS, Linux) | ±1 menit |
+
+Situs coba online menjalankan verifier yang sama (`internal/verify`), dikompilasi ke
+WebAssembly. Verifikasi berlangsung di browser dan bundle tidak dikirim ke server mana pun.
+Situs ini hanya mencakup verifikasi. Deteksi oleh agen, vault, dan rantai kustodi dicoba
+lewat jalur A atau B.
 
 Semua jalur aman dijalankan. Skenario serangan hanyalah simulasi: reverse shell berupa proses
 tidur dengan pola di baris perintahnya, dan lalu lintas jaringan hanya menuju rentang

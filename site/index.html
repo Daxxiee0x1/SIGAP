@@ -1,0 +1,211 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'wasm-unsafe-eval'; style-src 'self'; img-src 'self' data:; font-src 'self'; connect-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'">
+<title>SIGAP · Coba verifier forensik online · Kartika Cyber Hackathon 2026</title>
+<meta name="description" content="Coba langsung verifier bukti forensik SIGAP di browser: verifikasi 10 contoh bundle, ubah bukti sendiri, atau unggah bundle Anda. Verifier Go asli yang dikompilasi ke WebAssembly.">
+<link rel="stylesheet" href="style.css">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 48 48'%3E%3Cpath d='M24 5l16 6v12c0 10-7 17-16 20C15 40 8 33 8 23V11z' fill='%23f3efe4' stroke='%231b2836' stroke-width='3'/%3E%3Cpath d='M16 24l6 6 11-12' fill='none' stroke='%23e2620f' stroke-width='4'/%3E%3C/svg%3E">
+<script src="app.js" defer></script>
+</head>
+<body>
+<svg class="sprite" aria-hidden="true">
+  <symbol id="i-verify" viewBox="0 0 48 48"><path d="M24 5l16 6v12c0 10-7 17-16 20C15 40 8 33 8 23V11z"/><path d="M16 24l6 6 11-12"/></symbol>
+  <symbol id="i-ok" viewBox="0 0 48 48"><circle cx="24" cy="24" r="18"/><path d="M15 24l6 6 12-13"/></symbol>
+  <symbol id="i-x" viewBox="0 0 48 48"><path d="M24 5l19 34H5z"/><path d="M18 22l12 12M30 22L18 34"/></symbol>
+  <symbol id="i-missing" viewBox="0 0 48 48"><path d="M6 8h16v16H6zM26 8h16v16H26zM6 28h16v16H6z"/><path d="M26 28h16v16H26z" stroke-dasharray="3 4"/></symbol>
+  <symbol id="i-untrusted" viewBox="0 0 48 48"><circle cx="16" cy="24" r="8"/><path d="M24 24h18M36 24v7"/><path d="M6 42L42 6"/></symbol>
+  <symbol id="i-malformed" viewBox="0 0 48 48"><path d="M8 14h32v26H8z"/><path d="M8 14l8-8h16l8 8"/><path d="M20 22l4 6-4 6 4 6"/></symbol>
+  <symbol id="i-detect" viewBox="0 0 48 48"><circle cx="24" cy="24" r="18"/><circle cx="24" cy="24" r="10"/><path d="M24 24 L37 11"/><circle cx="24" cy="24" r="2.5"/></symbol>
+  <symbol id="i-chain" viewBox="0 0 48 48"><rect x="4" y="17" width="22" height="14" rx="7"/><rect x="22" y="17" width="22" height="14" rx="7"/></symbol>
+  <symbol id="i-upload" viewBox="0 0 48 48"><path d="M6 30v10h36V30"/><path d="M24 32V8M15 17l9-9 9 9"/></symbol>
+</svg>
+
+<a class="skip" href="#contoh">Lewati ke uji verifikasi</a>
+
+<header class="topbar">
+  <div class="wrap topbar-in">
+    <a class="brand" href="#top" aria-label="SIGAP, ke atas halaman">
+      <svg class="ico" aria-hidden="true"><use href="#i-verify"/></svg>
+      <span><b>SIGAP</b> <span class="brand-sub">verifier online</span></span>
+    </a>
+    <nav class="nav" aria-label="Tautan proyek">
+      <a href="https://github.com/Daxxiee0x1/SIGAP">Kode sumber</a>
+      <a href="https://github.com/Daxxiee0x1/SIGAP/releases/latest">Kit juri offline</a>
+      <a href="https://github.com/Daxxiee0x1/SIGAP/blob/main/docs/cara_mencoba.md">Demo lengkap</a>
+    </nav>
+    <p class="engine" id="engine" role="status"><span class="dot" aria-hidden="true"></span><span id="engine-text">Memuat verifier…</span></p>
+  </div>
+</header>
+
+<main id="top">
+  <section class="hero wrap">
+    <div class="hero-grid">
+      <div>
+        <p class="eyebrow">Kartika Cyber Hackathon 2026 · Kategori Dukungan Teknologi</p>
+        <h1>Ubah satu byte bukti.<br>Lihat SIGAP menolaknya.</h1>
+        <p class="lead">SIGAP mengamankan bukti forensik di node IoMT yang sering bekerja tanpa koneksi: mendeteksi insiden, mengumpulkan artefak, lalu menandatanganinya dengan Ed25519. Halaman ini menjalankan <strong>verifier Go yang sama</strong> dengan yang dipakai node, laptop analis, dan vault, dikompilasi ke WebAssembly.</p>
+      </div>
+      <figure class="anatomy">
+        <figcaption>Anatomi bundle bukti</figcaption>
+        <p class="zip-name">bnd-sensor-01-20261105-001.zip</p>
+        <ul>
+          <li><b>manifest.json</b><span>Daftar artefak beserta SHA-256 dan ukuran tiap berkas</span></li>
+          <li class="sig"><b>manifest.sig</b><span>Tanda tangan Ed25519 atas byte manifest, dibuat di node</span></li>
+          <li><b>artifacts/</b><span>Proses, koneksi, log, konfigurasi (kredensial disamarkan), metadata node</span></li>
+        </ul>
+        <p class="flow"><span>bundle + trust_store.json</span><span class="arrow" aria-hidden="true"></span><span>verifier</span><span class="arrow" aria-hidden="true"></span><span>1 dari 5 status</span></p>
+      </figure>
+    </div>
+    <ul class="facts">
+      <li><b>Verifier asli</b><span>Kode <code>internal/verify</code> yang sama, bukan tiruan</span></li>
+      <li><b>Tanpa server</b><span>Bundle diperiksa di browser Anda dan tidak diunggah ke mana pun</span></li>
+      <li><b>Lima status</b><span>VALID, TAMPERED, INCOMPLETE, UNTRUSTED_SIGNER, MALFORMED</span></li>
+    </ul>
+    <ol class="steps" aria-label="Langkah mencoba">
+      <li><a href="#contoh"><span class="n">01</span>Verifikasi 10 contoh bundle</a></li>
+      <li><a href="#ubah"><span class="n">02</span>Ubah bukti sendiri</a></li>
+      <li><a href="#unggah"><span class="n">03</span>Unggah bundle Anda</a></li>
+    </ol>
+  </section>
+
+  <section class="sheet wrap" id="contoh" aria-labelledby="h-contoh">
+    <div class="sheet-head">
+      <span class="code">SIGAP-WEB-01</span>
+      <h2 id="h-contoh">Verifikasi 10 contoh bundle</h2>
+      <span class="meta">1 asli · 9 manipulasi</span>
+    </div>
+    <div class="sheet-body split">
+      <div>
+        <p class="intro">Semua bundle dibuat dari node sensor <code>sensor-01</code> dengan data sintetis. Satu bundle asli, sembilan sisanya sengaja dirusak dengan cara yang biasa dipakai penyerang. Klik baris mana pun untuk melihat alasan verifier.</p>
+        <div class="toolbar">
+          <button class="btn primary" id="verify-all" type="button" disabled>Verifikasi semua</button>
+          <p class="summary" id="summary" aria-live="polite"></p>
+        </div>
+        <div class="table-scroll">
+          <table class="spec samples">
+            <thead><tr><th scope="col">Bundle</th><th scope="col">Manipulasi</th><th scope="col">Harapan</th><th scope="col">Hasil</th></tr></thead>
+            <tbody id="sample-rows"><tr><td colspan="4" class="muted">Memuat contoh bundle…</td></tr></tbody>
+          </table>
+        </div>
+      </div>
+      <aside class="result-col" aria-labelledby="h-hasil-1">
+        <h3 id="h-hasil-1" class="col-title">Hasil verifikasi</h3>
+        <div class="result" id="result-samples" aria-live="polite">
+          <p class="placeholder">Pilih satu bundle di tabel, atau tekan <b>Verifikasi semua</b>.</p>
+        </div>
+      </aside>
+    </div>
+  </section>
+
+  <section class="sheet wrap" id="ubah" aria-labelledby="h-ubah">
+    <div class="sheet-head">
+      <span class="code">SIGAP-WEB-02</span>
+      <h2 id="h-ubah">Ubah bukti sendiri</h2>
+      <span class="meta">bundle <code>00_asli.zip</code></span>
+    </div>
+    <div class="sheet-body">
+      <p class="intro">Ini isi bundle asli. Ubah satu karakter mana pun, misalnya hapus baris <code>bash -i</code> dari daftar proses atau ganti <code>[REDACTED]</code> di konfigurasi, lalu verifikasi. Manifest dan tanda tangan tidak ikut berubah, persis seperti penyerang yang tidak memegang kunci node.</p>
+      <div class="editor">
+        <div class="files" role="group" aria-label="Berkas di dalam bundle">
+          <p class="col-title">Isi bundle</p>
+          <ul id="file-list"><li class="muted">Memuat…</li></ul>
+        </div>
+        <div class="pane">
+          <div class="pane-head">
+            <label for="file-text" id="file-label">Pilih berkas</label>
+            <span class="pane-state" id="file-state"></span>
+          </div>
+          <textarea id="file-text" spellcheck="false" autocomplete="off" disabled></textarea>
+          <div class="toolbar wrap-tools">
+            <button class="btn primary" id="edit-verify" type="button" disabled>Verifikasi versi ini</button>
+            <button class="btn" id="edit-remove" type="button" disabled>Hapus berkas ini</button>
+            <button class="btn" id="edit-add" type="button" disabled>Selipkan berkas asing</button>
+            <button class="btn ghost" id="edit-reset" type="button" disabled>Kembalikan ke asli</button>
+            <button class="btn ghost" id="edit-download" type="button" disabled>Unduh bundle ini</button>
+          </div>
+          <p class="hint" id="edit-msg" aria-live="polite"></p>
+        </div>
+        <div class="result" id="result-edit" aria-live="polite">
+          <p class="placeholder">Hasil verifikasi bundle yang Anda ubah muncul di sini.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="sheet wrap" id="unggah" aria-labelledby="h-unggah">
+    <div class="sheet-head">
+      <span class="code">SIGAP-WEB-03</span>
+      <h2 id="h-unggah">Unggah bundle Anda</h2>
+      <span class="meta">.zip dari <code>sigap collect</code></span>
+    </div>
+    <div class="sheet-body split">
+      <div>
+        <p class="intro">Punya bundle dari <code>make up</code>, dari kit juri, atau hasil unduhan langkah 02? Periksa di sini. File tetap di komputer Anda.</p>
+        <label class="drop" id="drop" for="upload-bundle">
+          <svg class="ico big" aria-hidden="true"><use href="#i-upload"/></svg>
+          <span class="drop-title">Pilih atau seret file bundle (.zip)</span>
+          <span class="drop-sub" id="drop-name">Belum ada file</span>
+          <input type="file" id="upload-bundle" accept=".zip,application/zip" disabled>
+        </label>
+        <fieldset class="trust">
+          <legend>Trust store</legend>
+          <label><input type="radio" name="trust" value="sample" checked> Trust store contoh <span class="muted">(kunci publik <code>node-sensor-01-demo</code>)</span></label>
+          <label><input type="radio" name="trust" value="own"> Trust store saya sendiri</label>
+          <input type="file" id="upload-trust" accept=".json,application/json" disabled aria-label="File trust_store.json">
+          <p class="hint">Bundle dari <code>make up</code> membutuhkan <code>trust_store.json</code> dari container sensor (lihat <code>make tamper-demo</code>).</p>
+        </fieldset>
+      </div>
+      <aside class="result-col" aria-labelledby="h-hasil-3">
+        <h3 id="h-hasil-3" class="col-title">Hasil verifikasi</h3>
+        <div class="result" id="result-upload" aria-live="polite">
+          <p class="placeholder">Belum ada bundle yang diperiksa.</p>
+        </div>
+      </aside>
+    </div>
+  </section>
+
+  <section class="sheet wrap" id="lainnya" aria-labelledby="h-lainnya">
+    <div class="sheet-head">
+      <span class="code">SIGAP-WEB-04</span>
+      <h2 id="h-lainnya">Bagian SIGAP yang berjalan di luar browser</h2>
+      <span class="meta">butuh Docker</span>
+    </div>
+    <div class="sheet-body cards">
+      <article class="card">
+        <svg class="ico" aria-hidden="true"><use href="#i-detect"/></svg>
+        <h3>Deteksi dan koleksi otomatis</h3>
+        <p>Agen Go di node membaca <code>/proc</code> langsung, mendeteksi reverse shell, egress di luar allowlist, port baru, perubahan konfigurasi, lonjakan CPU, dan eksekusi dari <code>/tmp</code>, lalu langsung membuat bundle bertanda tangan. Bundle tetap aman di outbox saat link ke pusat putus.</p>
+      </article>
+      <article class="card">
+        <svg class="ico" aria-hidden="true"><use href="#i-chain"/></svg>
+        <h3>Vault dan rantai kustodi</h3>
+        <p>Vault FastAPI memverifikasi ulang dengan biner yang sama dan mencatat log kustodi append-only yang berantai hash. Bila admin mengubah satu entri langsung di database, pemeriksaan rantai menunjukkan titik putusnya.</p>
+      </article>
+      <article class="card">
+        <svg class="ico" aria-hidden="true"><use href="#i-verify"/></svg>
+        <h3>Coba semuanya</h3>
+        <p><code>git clone https://github.com/Daxxiee0x1/SIGAP.git</code>, lalu <code>make demo</code>. Panduan langkah demi langkah ada di <a href="https://github.com/Daxxiee0x1/SIGAP/blob/main/docs/cara_mencoba.md">cara_mencoba.md</a>, dan hasil uji lengkap di <a href="https://github.com/Daxxiee0x1/SIGAP/blob/main/docs/bukti_demo.md">bukti_demo.md</a>.</p>
+      </article>
+    </div>
+    <div class="sheet-body claims">
+      <div><h3>Yang dijamin</h3><p>Perubahan, penambahan, atau penghapusan berkas setelah bundle ditandatangani pasti terdeteksi oleh pemegang kunci publik tepercaya.</p></div>
+      <div><h3>Yang tidak dijamin</h3><p>Kebenaran isi artefak dari node yang sudah dikuasai penyerang sebelum penandatanganan. Waktu di manifest dilaporkan sendiri oleh node.</p></div>
+    </div>
+  </section>
+</main>
+
+<footer class="titleblock">
+  <div class="wrap tb">
+    <div><b>DOC</b>SIGAP-WEB · REV-A</div>
+    <div>Tim Pokoknya Ikut Aja Kata Dosen</div>
+    <div>Kartika Cyber Hackathon 2026</div>
+    <div><a href="https://github.com/Daxxiee0x1/SIGAP">github.com/Daxxiee0x1/SIGAP</a></div>
+  </div>
+</footer>
+
+<noscript><p class="noscript">Halaman ini membutuhkan JavaScript dan WebAssembly untuk menjalankan verifier.</p></noscript>
+</body>
+</html>

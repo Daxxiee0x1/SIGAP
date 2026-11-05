@@ -37,9 +37,18 @@ func Load(path string) (*Store, error) {
 	if err != nil {
 		return nil, fmt.Errorf("trust store: %w", err)
 	}
+	s, err := Parse(data)
+	if err != nil {
+		return nil, fmt.Errorf("trust store %s: %w", path, err)
+	}
+	return s, nil
+}
+
+// Parse reads a trust store from bytes; used where there is no filesystem (browser demo).
+func Parse(data []byte) (*Store, error) {
 	var s Store
 	if err := json.Unmarshal(data, &s); err != nil {
-		return nil, fmt.Errorf("trust store %s: %w", path, err)
+		return nil, err
 	}
 	return &s, nil
 }

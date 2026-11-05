@@ -40,7 +40,10 @@ Versi dependensi tidak langsung mengikuti hasil `pip install` dan diperiksa pada
 | curl | curl license (mirip MIT) | memanggil API vault di demo (`scripts/demo.sh`, `docs/cara_mencoba.md`) |
 | pytest | MIT | pengujian (`tests/`) |
 | IBM Plex Mono dan IBM Plex Sans Condensed | SIL Open Font License 1.1 | huruf di slide dan thumbnail, tertanam di PDF slide |
-| Chromium | BSD-3-Clause dan lainnya | merender slide ke PDF |
+| Chromium | BSD-3-Clause dan lainnya | merender slide, proposal, dan thumbnail, serta mengambil tangkapan layar dashboard |
+| Xvfb dan xterm (X.Org) | MIT/X11 | menjalankan terminal sungguhan untuk tangkapan layar 04 |
+| ImageMagick | ImageMagick License (mirip Apache-2.0) | mengambil tangkapan layar 04 dari X server |
+| DejaVu Sans Mono | Bitstream Vera License dan domain publik | huruf terminal di tangkapan layar 04 |
 | GitHub Actions `actions/checkout`, `actions/setup-go`, `actions/setup-python` | MIT | CI dan pembangunan rilis (`.github/workflows/`) |
 | GitHub CLI (`gh`) | MIT | menerbitkan GitHub Release (`.github/workflows/release.yml`) |
 
@@ -76,7 +79,7 @@ Rulebook meminta karya pre-existing dideklarasikan secara jelas.
 | Pernyataan | Isi |
 | --- | --- |
 | Kode atau karya yang sudah ada sebelum periode program | **Kode program: tidak ada.** Seluruh kode di `cmd/`, `internal/`, `vault/`, `simulation/`, `tools/`, `tests/`, `scripts/`, `deploy/`, dan `offline/` ditulis untuk karya ini. Tidak ada potongan kode yang disalin dari proyek lain. **Karya pihak lain yang sudah ada dan dipakai tanpa diubah:** (1) pustaka, framework, dan image Docker di bagian 1, yang dipasang sebagai dependensi dan tidak disertakan sebagai salinan kode di repositori; (2) huruf IBM Plex Mono dan IBM Plex Sans Condensed (IBM Corp., 2017, SIL OFL 1.1) yang dipakai di slide dan thumbnail. |
-| Alat bantu AI | Model AI **Claude** (Anthropic), termasuk melalui Figma Make, dipakai sebagai asisten untuk menulis dan meninjau kode, menyusun konfigurasi menjalankan proyek, dokumentasi, slide, tangkapan layar, dan alur rilis GitHub. Seluruh hasil ditinjau dan diuji oleh tim, dan menjadi tanggung jawab tim. |
+| Alat bantu AI | Model AI **Claude** (Anthropic), termasuk melalui Figma Make, dipakai sebagai asisten untuk menulis dan meninjau kode, menyusun konfigurasi menjalankan proyek, dokumentasi, proposal, slide, tangkapan layar, dan alur rilis GitHub. Semua tangkapan layar diambil dari program yang benar-benar berjalan, bukan digambar. Seluruh hasil ditinjau dan diuji oleh tim, dan menjadi tanggung jawab tim. |
 
 Tim menyatakan bahwa:
 

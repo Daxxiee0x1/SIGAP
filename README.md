@@ -17,9 +17,11 @@ dan mencatat rantai kustodi berantai hash.
 
 | | |
 | --- | --- |
+| Coba online (tanpa instal) | [daxxiee0x1.github.io/SIGAP](https://daxxiee0x1.github.io/SIGAP/). Verifier SIGAP berjalan di browser lewat WebAssembly: verifikasi 10 contoh bundle, ubah satu byte lalu lihat bundle ditolak, atau unggah bundle sendiri. Bundle tidak dikirim ke server mana pun |
 | Coba dalam 3 menit | `make up`, buka `http://127.0.0.1:8000`, lalu `make inject-reverse_shell` dan `make tamper-demo`. Panduan lengkap ada di [docs/cara_mencoba.md](docs/cara_mencoba.md) |
 | Coba tanpa Docker (1 menit) | Unduh `sigap-kit-juri-*.zip` dari [halaman Releases](https://github.com/Daxxiee0x1/SIGAP/releases/latest), ekstrak, lalu klik dua kali `coba.cmd` (Windows) atau jalankan `./coba.sh` (macOS/Linux). Verifier memeriksa 1 bundle asli dan 9 bundle manipulasi tanpa memasang apa pun |
 | Video demo | `[link YouTube, isi setelah diunggah]` |
+| Proposal | [submission/SIGAP_Proposal_Kartika_2026.pdf](submission/SIGAP_Proposal_Kartika_2026.pdf) |
 | Slide penjelasan | [submission/SIGAP_Slides_Kartika_2026.pdf](submission/SIGAP_Slides_Kartika_2026.pdf) |
 | Screenshot | [screenshot/](screenshot/) (5 gambar) |
 | Thumbnail | [submission/thumbnail-1200x630.png](submission/thumbnail-1200x630.png) |
@@ -37,7 +39,11 @@ dan mencatat rantai kustodi berantai hash.
 | `simulation/`, `tools/`, `tests/` | **Python** | Skrip skenario, manipulasi bundle, dan uji end-to-end |
 
 Hanya ada **satu implementasi verifikasi** (`internal/verify`). Node, laptop analis, dan
-vault semuanya memanggilnya, sehingga hasil `VALID`/`TAMPERED` tidak bisa berbeda.
+vault semuanya memanggilnya, sehingga hasil `VALID`/`TAMPERED` tidak bisa berbeda. Situs
+coba online memakai kode yang sama, dikompilasi ke WebAssembly (`cmd/sigap-wasm`).
+
+SIGAP tetap offline-first. Situs online hanya pintu masuk bagi juri untuk mencoba verifier
+tanpa memasang apa pun. Verifikasinya pun berjalan lokal di browser.
 
 ## Coba dalam 3 menit
 
@@ -79,6 +85,7 @@ make build
 
 ```
 cmd/sigap/            CLI tunggal: keygen | collect | agent | verify
+cmd/sigap-wasm/       verifier yang sama untuk browser (situs coba online)
 internal/detector/    aturan: reverse shell, egress di luar allowlist, port baru, hash config, CPU/mem, exec dari /tmp
 internal/collector/   baca /proc langsung (tanpa ps/ss/exec) + redaksi kredensial
 internal/bundle/      manifest.json + manifest.sig terpisah + zip; sequence & prev hash
@@ -86,16 +93,18 @@ internal/signing/     Ed25519
 internal/truststore/  kunci publik + masa berlaku + status
 internal/verify/      verifier offline (input tak tepercaya)
 internal/uplink/      store-and-forward ke vault (DDIL)
+internal/playground/  ubah/hapus/selipkan berkas di bundle untuk situs coba online
 vault/                FastAPI + SQLite, log kustodi append-only berantai hash, dashboard tanpa CDN
 simulation/           sensor simulasi + inject_anomaly.py (aman, jaringan internal)
 tools/                make_tampered.py
 tests/                pytest end-to-end + uji log kustodi
 deploy/               Dockerfile agent & vault
 offline/              kit instalasi tanpa internet
-scripts/              demo.sh, build-release.sh, kit-juri/ (skrip coba dan panduan untuk Releases)
-.github/workflows/    ci.yml (uji setiap push), release.yml (terbitkan Releases dari tag v*)
+scripts/              demo.sh, build-release.sh, build-site.sh, make-samples.sh, kit-juri/ (skrip coba untuk Releases)
+site/                 situs coba online (GitHub Pages)
+.github/workflows/    ci.yml (uji setiap push), release.yml (Releases dari tag v*), pages.yml (situs coba online)
 docs/                 arsitektur, model ancaman, cara mencoba, bukti demo, HKI
-submission/           slide penjelasan (PDF) dan thumbnail 1200x630
+submission/           proposal dan slide penjelasan (PDF), thumbnail 1200x630
 screenshot/           5 tangkapan layar untuk form submission
 ```
 

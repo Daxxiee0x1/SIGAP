@@ -225,5 +225,24 @@ berbasis baseline pada host bersama (lihat [cara_mencoba.md](cara_mencoba.md#mas
 | `screenshot/01-dashboard-audit.png` | Daftar bundle dengan empat status, head hash, rantai `utuh (9 entri)` |
 | `screenshot/02-bundle-valid.png` | Detail bundle VALID: 6 artefak, 1 redaksi, timeline kustodi, replay `duplicate_ignored` |
 | `screenshot/03-bundle-tampered.png` | Detail bundle TAMPERED: `hash/ukuran tidak cocok: artifacts/process_list.txt` |
-| `screenshot/04-verifikasi-offline.png` | Keluaran `sigap verify` untuk 10 skenario. Baris sha256 tidak ditampilkan |
+| `screenshot/04-verifikasi-offline.png` | Dua jendela xterm menjalankan `sigap verify` atas 10 contoh bundle kit juri, tanpa jaringan. Lihat bagian berikut |
 | `screenshot/05-rantai-kustodi-putus.png` | `PUTUS di entri #4` setelah TAMPERED ditulis ulang menjadi VALID |
+
+## Tangkapan layar 04: verifikasi offline di terminal
+
+Versi pertama `screenshot/04` adalah gambar bergaya terminal yang disusun dari keluaran run
+di atas, bukan tangkapan layar terminal. Gambar itu diganti pada 5 November 2026 dengan
+tangkapan layar terminal sungguhan:
+
+| Item | Nilai |
+| --- | --- |
+| Biner | `sigap 1.0.0`, di-build dari kode di repositori ini (`go build ./cmd/sigap`, Go 1.22.12) |
+| Bundle | 10 contoh dari `sh scripts/make-samples.sh`, sama dengan isi kit juri |
+| Terminal | Dua jendela xterm di X server virtual (Xvfb) 1600×700, huruf DejaVu Sans Mono |
+| Tanpa jaringan | Setiap sesi dijalankan dengan `unshare -rn` (namespace jaringan kosong). Baris pertama jendela kiri menunjukkan `curl` ke github.com gagal |
+| Pengambilan | `import -window root` (ImageMagick), tanpa penyuntingan |
+
+Perintah di setiap jendela adalah `sigap verify --trust trust_store.json bundle/<nama>.zip`
+untuk `00_asli` sampai `08_decompression_bomb`. Prompt `~/kit-juri$` dicetak skrip sesi.
+Semua status sesuai `bundle/harapan.txt`. Hash bundle berbeda dari run di atas karena kunci
+dan bundle contoh dibuat ulang, dan waktu verifikasi berbeda di setiap run.

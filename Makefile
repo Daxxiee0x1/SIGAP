@@ -2,7 +2,7 @@ SIGAP := ./build/sigap
 TRUST := ./build/demo/trust_store.json
 INJECT := docker compose exec sensor-01 python3 /opt/sigap/simulation/inject_anomaly.py
 
-.PHONY: build test up down logs inject-% demo tamper-demo offline release clean
+.PHONY: build test up down logs inject-% demo tamper-demo offline release site clean
 
 build:
 	CGO_ENABLED=0 go build -trimpath -ldflags "-s -w" -o $(SIGAP) ./cmd/sigap
@@ -46,6 +46,10 @@ offline:
 # VERSION=v1.0.0 make release
 release:
 	sh scripts/build-release.sh $(or $(VERSION),dev)
+
+# Online try-it site for GitHub Pages (dist/site/): WebAssembly verifier + sample bundles.
+site:
+	sh scripts/build-site.sh
 
 clean:
 	rm -rf build dist
