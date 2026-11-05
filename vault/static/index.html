@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="id">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>SIGAP Vault - Dashboard Audit</title>
+    <link rel="stylesheet" href="style.css" />
+    <script src="app.js" defer></script>
+  </head>
+  <body>
+    <header>
+      <div>
+        <strong>SIGAP</strong> <span class="muted">Vault - dashboard audit</span>
+      </div>
+      <div class="head">
+        <span class="muted">head hash</span> <code id="head">-</code>
+        <button id="check-chain" type="button">Periksa rantai</button>
+        <span id="chain-result"></span>
+      </div>
+    </header>
+    <main>
+      <section>
+        <h2>Bundle diterima</h2>
+        <table>
+          <thead>
+            <tr><th>Status</th><th>Bundle</th><th>Node</th><th>Kunci</th><th>Diterima (waktu vault)</th></tr>
+          </thead>
+          <tbody id="bundles"></tbody>
+        </table>
+      </section>
+      <section id="detail" hidden>
+        <h2 id="d-title"></h2>
+        <p><span id="d-status" class="badge"></span> <code id="d-sha"></code></p>
+        <ul id="d-reasons"></ul>
+        <h3>Artefak (dari manifest bertanda tangan)</h3>
+        <table>
+          <thead><tr><th>Path</th><th>SHA-256</th><th>Byte</th><th>Redaksi</th></tr></thead>
+          <tbody id="d-artifacts"></tbody>
+        </table>
+        <h3>Timeline kustodi</h3>
+        <ol id="d-custody"></ol>
+        <div class="row">
+          <input id="token" type="password" placeholder="Token vault" autocomplete="off" />
+          <button id="reverify" type="button">Verifikasi ulang</button>
+        </div>
+      </section>
+    </main>
+  </body>
+</html>

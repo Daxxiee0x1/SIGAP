@@ -1,0 +1,23 @@
+{
+  "node_id": "sensor-01",
+  "proc_root": "/proc",
+  "key_file": "/var/lib/sigap/node.key",
+  "outbox": "/var/lib/sigap/outbox",
+  "log_files": ["/var/log/sensor/sensor.log"],
+  "config_files": ["/etc/sensor/sensor.conf"],
+  "max_log_bytes": 262144,
+  "interval_seconds": 2,
+  "trigger_file": "/var/lib/sigap/trigger",
+  "vault_url": "http://203.0.113.10:8000",
+  "vault_token_env": "SIGAP_VAULT_TOKEN",
+  "rules": {
+    "shell_patterns": ["/dev/tcp/", "nc -e", "ncat -e", "bash -i", "socat exec:"],
+    "egress_allowlist": ["127.0.0.0/8", "203.0.113.10/32"],
+    "watched_files": ["/etc/sensor/sensor.conf"],
+    "suspicious_exec_dirs": ["/tmp/", "/var/tmp/", "/dev/shm/"],
+    "cpu_threshold_pct": 85,
+    "mem_threshold_pct": 95,
+    "spike_samples": 3,
+    "cooldown_seconds": 60
+  }
+}

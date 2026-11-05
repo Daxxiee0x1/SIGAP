@@ -1,0 +1,42 @@
+name: release
+
+# Menerbitkan GitHub Release berisi biner sigap dan kit juri.
+# Jalankan dengan mendorong tag (git tag v1.0.0 && git push origin v1.0.0), atau dari tab
+# Actions -> release -> Run workflow.
+on:
+  push:
+    tags: ["v*"]
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: "Tag rilis, misalnya v1.0.0"
+        required: true
+        default: "v1.0.0"
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    env:
+      TAG: ${{ github.event.inputs.tag || github.ref_name }}
+      GH_TOKEN: ${{ github.token }}
+      GH_REPO: ${{ github.repository }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with: { go-version: "1.22" }
+      - uses: actions/setup-python@v5
+        with: { python-version: "3.12" }
+      - run: go vet ./...
+      - run: go test ./...
+      - run: sh scripts/build-release.sh "$TAG"
+      - name: Terbitkan rilis
+        run: |
+          if gh release view "$TAG" >/dev/null 2>&1; then
+            gh release upload "$TAG" dist/release/* --clobber
+          else
+            gh release create "$TAG" dist/release/* --target "$GITHUB_SHA" \
+              --title "SIGAP $TAG" --notes-file dist/release-notes.md
+          fi

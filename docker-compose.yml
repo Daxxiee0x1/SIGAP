@@ -1,0 +1,49 @@
+# Everything runs on an internal network that uses the RFC 5737 documentation range.
+# Nothing contacts third parties; only the vault dashboard is published on localhost.
+name: sigap
+
+networks:
+  fieldnet:
+    internal: true
+    ipam:
+      config:
+        - subnet: 203.0.113.0/24
+  dashboard: {}
+
+volumes:
+  trust: {}
+  vault-data: {}
+  node-state: {}
+
+services:
+  vault:
+    build: { context: ., dockerfile: deploy/vault.Dockerfile }
+    environment:
+      SIGAP_VAULT_TOKEN: ${SIGAP_VAULT_TOKEN:-sigap-demo-token}
+      SIGAP_TRUST_STORE: /data/trust/trust_store.json
+    volumes:
+      - vault-data:/data/vault
+      - trust:/data/trust:ro
+    ports:
+      - "127.0.0.1:8000:8000"
+    networks:
+      fieldnet: { ipv4_address: 203.0.113.10 }
+      dashboard: {}
+
+  sensor-01:
+    build: { context: ., dockerfile: deploy/agent.Dockerfile }
+    environment:
+      SIGAP_NODE_ID: sensor-01
+      SIGAP_VAULT_TOKEN: ${SIGAP_VAULT_TOKEN:-sigap-demo-token}
+    volumes:
+      - trust:/data/trust
+      - node-state:/var/lib/sigap
+    networks:
+      fieldnet: { ipv4_address: 203.0.113.21 }
+
+  # Harmless "outside" host for the egress scenario (still on the internal network).
+  sink:
+    image: python:3.12-slim-bookworm
+    command: ["python3", "-m", "http.server", "443"]
+    networks:
+      fieldnet: { ipv4_address: 203.0.113.50 }

@@ -1,0 +1,9 @@
+[project]
+name = "sigap"
+version = "1.0.0"
+description = "SIGAP - forensik IoMT offline-first (Go edge agent + Python vault)"
+requires-python = ">=3.11"
+
+[tool.pytest.ini_options]
+pythonpath = ["."]
+testpaths = ["tests"]
