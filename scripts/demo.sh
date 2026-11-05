@@ -7,8 +7,22 @@
 #   KEEP=1 ./scripts/demo.sh      jangan hapus volume lama di awal
 #
 # Kebutuhan host: Docker (Compose v2) dan curl. Go/Python tidak wajib.
+# Windows: jalankan dari Git Bash dengan Docker Desktop (bash scripts/demo.sh).
 set -euo pipefail
 cd "$(dirname "$0")/.."
+
+# Git Bash di Windows mengubah argumen berawalan / (mis. /opt/sigap/...) menjadi path
+# Windows saat memanggil docker.exe, dan $PWD berbentuk /c/Users/... yang tidak dikenali
+# bind mount Docker Desktop. Matikan konversi itu dan pakai path C:/... untuk -v.
+HOST_PWD=$PWD
+USER_OPT=(--user "$(id -u):$(id -g)")
+case "$(uname -s)" in
+  MINGW* | MSYS*)
+    export MSYS_NO_PATHCONV=1
+    HOST_PWD=$(pwd -W)
+    USER_OPT=()   # UID Git Bash tidak berarti apa-apa di dalam container
+    ;;
+esac
 
 TOKEN="${SIGAP_VAULT_TOKEN:-sigap-demo-token}"
 VAULT="http://127.0.0.1:8000"
@@ -40,10 +54,10 @@ vault_has() { [ "$(vault_count)" -ge "$1" ]; }
 # Analyst laptop with no network at all: the same Go verifier, in a container with --network none.
 verify_offline() {
   show "sigap verify --trust trust_store.json $1    # docker run --network none"
-  docker run --rm --network none -v "$PWD/$OUT:/demo:ro" "$VAULT_IMG" \
+  docker run --rm --network none -v "$HOST_PWD/$OUT:/demo:ro" "$VAULT_IMG" \
     sigap verify --trust /demo/trust_store.json "/demo/$1" || true
 }
-pyrun() { docker run --rm --network none --user "$(id -u):$(id -g)" -v "$PWD:/w" -w /w "$PY_IMG" python3 "$@"; }
+pyrun() { docker run --rm --network none ${USER_OPT[@]+"${USER_OPT[@]}"} -v "$HOST_PWD:/w" -w /w "$PY_IMG" python3 "$@"; }
 submit() {
   show "curl -H 'Authorization: Bearer ****' -F file=@$1 $VAULT/api/bundles"
   curl -fsS -H "Authorization: Bearer $TOKEN" -F "file=@$1" -F "note=$2" "$VAULT/api/bundles"; echo

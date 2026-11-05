@@ -153,6 +153,9 @@ make down   # menghapus container dan volume (kunci node, outbox, database)
 
 ## B. Tanpa Docker (Linux)
 
+> **Windows dengan Git Bash?** Jalur A tetap bisa dipakai dengan Docker Desktop. Lihat
+> [Windows (Git Bash)](#windows-git-bash) di bawah.
+
 Agen membaca `/proc`, jadi jalur ini hanya bisa dijalankan di Linux. Langkah ini
 dijalankan ulang pada 5 November 2026. Hasilnya ada di [bukti_demo.md](bukti_demo.md).
 
@@ -288,6 +291,30 @@ juga menyediakan biner macOS (`darwin-amd64`, `darwin-arm64`) dan Windows
 (`windows-amd64.exe`, `windows-arm64.exe`).
 
 ---
+
+## Windows (Git Bash)
+
+Butuh Docker Desktop (backend WSL 2) dan Git for Windows. `curl` sudah ada di Git Bash,
+tetapi `make` tidak, jadi pakai padanan di bawah.
+
+Git Bash mengubah argumen berawalan `/` menjadi path Windows saat memanggil `docker.exe`.
+Matikan dulu di setiap jendela Git Bash:
+
+```sh
+export MSYS_NO_PATHCONV=1
+```
+
+| `make` | Padanan di Git Bash |
+| --- | --- |
+| `make up` | `docker compose up -d --build` |
+| `make logs` | `docker compose logs -f sensor-01 vault` |
+| `make inject-reverse_shell` | `docker compose exec -T sensor-01 python3 /opt/sigap/simulation/inject_anomaly.py reverse_shell` |
+| `make demo` | `bash scripts/demo.sh` (atau `AUTO=1 bash scripts/demo.sh`) |
+| `make tamper-demo` | Sudah tercakup di adegan 6 dan 8 `scripts/demo.sh` |
+| `make down` | `docker compose down -v` |
+
+`scripts/demo.sh` mengenali Git Bash sendiri: konversi path dimatikan otomatis, dan bind
+mount memakai path `C:/...`.
 
 ## Pengujian otomatis
 
